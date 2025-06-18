@@ -1,0 +1,6 @@
+@DocumentSimilarityComparison_HostAddress = http://localhost:5289
+
+GET {{DocumentSimilarityComparison_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
