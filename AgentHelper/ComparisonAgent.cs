@@ -1,21 +1,20 @@
 ﻿using DocumentSimilarityComparison.AzureHelper;
+using DocumentSimilarityComparison.DTO;
 
 namespace DocumentSimilarityComparison.AgentHelper
 {
     public static class ComparisonAgent
     {
-        public static async Task<List<string>> MatchResumesWithJobDescription(List<string> resumes, string jobDescription)
+        public static async Task<List<ResumeDTO>> MatchResumesWithJobDescription(List<ResumeDTO> resumes, string jobDescription)
         {
-            List<string> shortlistedResumes = new List<string>();
-            List<double> shortlistedScore = new List<double>();
-            foreach (var resume in resumes)
+            List<ResumeDTO> shortlistedResumes = new List<ResumeDTO>();
+            foreach (ResumeDTO resume in resumes)
             {
-                //double comparisonScore = await AzureHelper.AzureAIClientService.GetComparisonScoreAsync(resume,jobDescription);
-                double comparisonScore = await AzureHelper.AzureAIClientService.GetComparisonScoreAsync(resume, jobDescription);
-                if (comparisonScore>=0.8)
+                resume.ProfileScore = await AzureHelper.AzureAIClientService.GetComparisonScoreAsync(resume.JobDescription, jobDescription);
+                resume.ProfileMatchingPercentage = resume.ProfileScore.ToString("P");
+                if (resume.ProfileScore >= 0.8)
                 {
                     shortlistedResumes.Add(resume);
-                    shortlistedScore.Add(comparisonScore);
                 }
             }
             return shortlistedResumes;
