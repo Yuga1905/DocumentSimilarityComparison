@@ -8,5 +8,8 @@
         public string ProfileMatchingPercentage { get; set; }
         public int Rank { get; set; }
         public string ApplicantEmailId { get; set; }
+        public int Experience { get; set; }
+        public string Summary { get; set; }
+        public List<string> Skills { get; set; }
     }
 }

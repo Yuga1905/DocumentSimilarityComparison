@@ -16,17 +16,17 @@ namespace DocumentSimilarityComparison.Controllers
         //public IEnumerable<string> Get()
         public async Task<List<ResumeDTO>> Get()
         {
-            //string jobDescription = "Looking for a developer who has experience in c#,.NET and AI development ";
-            string jobDescription = "Looking for a developer who has experience in python ";
-            List<ResumeDTO> resumeList = new List<ResumeDTO>();
-            resumeList.Add(new ResumeDTO { ApplicantName = "John", JobDescription = "Experience in c#,.NET and AI development", ApplicantEmailId="test@gmail.com" });
-            resumeList.Add(new ResumeDTO { ApplicantName = "Kevin", JobDescription = "Skilled in Python, Machine Learning and Data Science", ApplicantEmailId = "yugashini1905@gmail.com" });
-            resumeList.Add(new ResumeDTO { ApplicantName = "Sara", JobDescription = "Expertise in Java, Spring boot and Microservices", ApplicantEmailId = "sample@gmail.com" });
+            string jobDescription = "Looking for a developer who has experience in Python,Java and AI development ";
+            //string jobDescription = "Looking for a developer who has experience in c# and .NET ";
+            //List<ResumeDTO> resumeList = new List<ResumeDTO>();
+            //resumeList.Add(new ResumeDTO { ApplicantName = "John", JobDescription = "Experience in c#,.NET and AI development", ApplicantEmailId="test@gmail.com" });
+            //resumeList.Add(new ResumeDTO { ApplicantName = "Kevin", JobDescription = "Skilled in Python, Machine Learning and Data Science", ApplicantEmailId = "yugashini1905@gmail.com" });
+            //resumeList.Add(new ResumeDTO { ApplicantName = "Sara", JobDescription = "Expertise in Java, Spring boot and Microservices", ApplicantEmailId = "sample@gmail.com" });
             
-            List<ResumeDTO> matchedResumes = await ComparisonAgent.MatchResumesWithJobDescription(resumeList, jobDescription);
+            List<ResumeDTO> matchedResumes = await ComparisonAgent.MatchResumesWithJobDescription(jobDescription);
             List<ResumeDTO> RankedResumes = await RankingAgent.RankResumesWithScore(matchedResumes);
             bool communicationSent = await CommunicationAgent.SendEmailWithRank(RankedResumes);
-            return RankedResumes;
+            return matchedResumes;
         }
 
         // GET api/<DocSimilarityComparisonController>/5

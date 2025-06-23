@@ -13,19 +13,19 @@ namespace DocumentSimilarityComparison.AgentHelper
             string fromEmailPassword = "test";
             try
             {
-                MailMessage mailMessage = new MailMessage();
-                mailMessage.From = new MailAddress(fromEmail);
-                mailMessage.To.Add(resumeDTO.ApplicantEmailId);
-                mailMessage.Subject = "Job Opportunity at Our Company";
-                mailMessage.Body = "<html><body><h2>Hello!</h2><p>We have a job that might interest you.</p></body></html>";
+                //MailMessage mailMessage = new MailMessage();
+                //mailMessage.From = new MailAddress(fromEmail);
+                //mailMessage.To.Add(resumeDTO.ApplicantEmailId);
+                //mailMessage.Subject = "Job Opportunity at Our Company";
+                //mailMessage.Body = "<html><body><h2>Hello!</h2><p>We have a job that might interest you.</p></body></html>";
 
-                SmtpClient smtpClient = new SmtpClient("smtp.gmail.com",587);
-                smtpClient.Credentials = new NetworkCredential(fromEmail, fromEmailPassword);
-                smtpClient.EnableSsl = true;
-                smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-                smtpClient.UseDefaultCredentials = false;
+                //SmtpClient smtpClient = new SmtpClient("smtp.gmail.com",587);
+                //smtpClient.Credentials = new NetworkCredential(fromEmail, fromEmailPassword);
+                //smtpClient.EnableSsl = true;
+                //smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
+                //smtpClient.UseDefaultCredentials = false;
 
-                smtpClient.Send(mailMessage);
+                //smtpClient.Send(mailMessage);
                 return true;
             }
             catch(Exception ex)
