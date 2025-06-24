@@ -28,24 +28,5 @@ public class JobDescriptionController : ControllerBase
         _context.JobDescriptions.Add(jobDescription);
         await _context.SaveChangesAsync();
         return CreatedAtAction(nameof(Get), new { id = jobDescription.JdId }, jobDescription);
-    }
-
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, Job_Description_Model jobDescription)
-    {
-        if (id != jobDescription.JdId) return BadRequest();
-        _context.Entry(jobDescription).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
-        return NoContent();
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        var job = await _context.JobDescriptions.FindAsync(id);
-        if (job == null) return NotFound();
-        _context.JobDescriptions.Remove(job);
-        await _context.SaveChangesAsync();
-        return NoContent();
-    }
+    }    
 }

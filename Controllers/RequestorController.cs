@@ -31,22 +31,5 @@ public class RequestorController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = requestor.Id }, requestor);
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, Requestor_Model requestor)
-    {
-        if (id != requestor.Id) return BadRequest();
-        _context.Entry(requestor).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
-        return NoContent();
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        var requestor = await _context.Requestors.FindAsync(id);
-        if (requestor == null) return NotFound();
-        _context.Requestors.Remove(requestor);
-        await _context.SaveChangesAsync();
-        return NoContent();
-    }
+   
 }
