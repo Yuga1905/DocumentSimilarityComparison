@@ -13,7 +13,14 @@ public class ResumeDetailController : ControllerBase
     public ResumeDetailController(DocumentDbContext context) => _context = context;
 
     [HttpGet]
-    public async Task<ActionResult> GetAll() => Ok(await _context.ResumeDetails.ToListAsync());  
+    public async Task<ActionResult> GetAll() => Ok(await _context.ResumeDetails.ToListAsync());
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult> Get(int id)
+    {
+        var requestor = await _context.Requestors.FindAsync(id);
+        return requestor == null ? NotFound() : Ok(requestor);
+    }
 
     [HttpPost]
     public async Task<ActionResult> Create(Resume_Details_Model resumeDetail)
