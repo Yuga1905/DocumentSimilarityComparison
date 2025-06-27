@@ -224,7 +224,7 @@ namespace DocumentSimilarityComparison.AzureHelper
                 new { role = "user", content = prompt }
             },
                 temperature = 0.3,
-                max_tokens = 200,
+                max_tokens = 8192,
             };
 
             var jsonContent = JsonConvert.SerializeObject(requestBody);
@@ -259,8 +259,10 @@ namespace DocumentSimilarityComparison.AzureHelper
                 Resume:
                 {jobDescriptionDetails}
 
-                Return the result as JSON:
+                Return the result only as JSON:
                 {{ ""JobTitle"": ""..."", ""JobDescription"": ""..."" }}
+                Make sure to escape any double quotes or slash or special character inside the values and return a valid json.
+                Give response with key job description not more than 100 words.
                 ";
 
             var payload = new
@@ -271,7 +273,7 @@ namespace DocumentSimilarityComparison.AzureHelper
             new { role = "user", content = prompt }
         },
                 temperature = 0,
-                max_tokens = 150
+                max_tokens = 8192
             };
 
             var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
@@ -325,7 +327,7 @@ namespace DocumentSimilarityComparison.AzureHelper
             new { role = "user", content = prompt }
         },
                 temperature = 0,
-                max_tokens = 150
+                max_tokens = 8192
             };
 
             var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
@@ -382,7 +384,7 @@ namespace DocumentSimilarityComparison.AzureHelper
             new { role = "user", content = prompt }
         },
                 temperature = 0.3,
-                max_tokens = 300
+                max_tokens = 8192
             };
 
             var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
