@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <Folder Include="Resources\JobApplicantsResume\" />
+    <Folder Include="Resources\JobDescription\" />
   </ItemGroup>
 
 </Project>

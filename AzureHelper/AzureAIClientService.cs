@@ -14,27 +14,36 @@ using UglyToad.PdfPig;
 using System.Net.Http.Headers;
 using System.Globalization;
 using Newtonsoft.Json.Linq;
+using DocumentSimilarityComparison.Utility;
+using DocumentSimilarityComparison.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DocumentSimilarityComparison.AzureHelper
 {
     public static class AzureAIClientService
     {
+
         private static readonly string azureEndpoint = "https://innovatorsopenairesource.openai.azure.com/";
         private static readonly string azureAPIKey = "81TfYFL0O1bkvbNzvWaoqrq63dJUDYS0OS3O9RUiOl08FUkE1g2TJQQJ99BFACYeBjFXJ3w3AAABACOGCq2N";
         private static readonly string azureLanguageAPIPath = "/language/:analyze-text?api-version=2023-04-01";
         private static readonly string azureAPIVersion = "2023-10-01-preview";
         private static readonly string deploymentName = "InnovatorsOpenAIResource";
+        private static readonly string formRecognizerEndpoint = "https://jdextractfromdocumentresource.cognitiveservices.azure.com/";
+        private static readonly string formRecognizerApiKey = "BxshjNY2iWnTp5vzlplUE9cxnpl8WZYoNATJmlySyPKolUztdD2sJQQJ99BFACYeBjFXJ3w3AAALACOGDyHK";
 
-        public static async Task GetComparisonScoreAsync(string resumePath, ResumeDTO resumedto, string text2)
+        public static async Task<(string resultJobDescriptionText, Job_Description_Model job_Description_Model)> GetJobDescription(string jobDescriptionPath, Job_Description_Model job_Description_Model)
         {
-            //var client = new OpenAIClient(new AzureKeyCredential(azureAPIKey));
-            //List<float> resumeEmbedding = await GetEmbeddingAsync(deploymentName, text1);
-            //List<float> jobDescriptionEmbedding = await GetEmbeddingAsync(deploymentName, text2);
-            //double score= CosineSimilarity(jobDescriptionEmbedding, resumeEmbedding);
-            //return score;
-            string formRecognizerEndpoint = "https://jdextractfromdocumentresource.cognitiveservices.azure.com/";
-            string formRecognizerApiKey = "BxshjNY2iWnTp5vzlplUE9cxnpl8WZYoNATJmlySyPKolUztdD2sJQQJ99BFACYeBjFXJ3w3AAALACOGDyHK";
+            List<string> jobDescriptionText = await ExtractTextFromResume(jobDescriptionPath, formRecognizerEndpoint, formRecognizerApiKey);
+            string resultJobDescriptionText = String.Join(" ", jobDescriptionText);
+            string jobDescriptionPrompt = $"Extract only the job description skills from the following text:\n\n{resultJobDescriptionText}\n\nReturn as a comma-separated list.";
+            string jobDescriptionSkills = await GetTechnicalSkillsFromOpenAI(jobDescriptionPrompt);
+            GetJobDescriptiondetails(resultJobDescriptionText, job_Description_Model);
+            InsertJobDescriptionDetails(job_Description_Model);
+            return (resultJobDescriptionText,job_Description_Model);
+        }
 
+        public static async Task GetComparisonScoreAsync(string resumePath, ResumeDTO resumedto, string jobDescriptionSkills, Job_Description_Model job_Description_Model)
+        {
             string textAnalyticsEndpoint = "https://resumecomparelanguageservice.cognitiveservices.azure.com/";
             string textAnalyticsApikey = "CHGOd28xTqvETk5r6BCkmdL9XMZWFtJiKYoWaHALaL24Dt84jI8UJQQJ99BFACYeBjFXJ3w3AAAaACOGklLL";
 
@@ -45,17 +54,20 @@ namespace DocumentSimilarityComparison.AzureHelper
             string ApplicantSkills = await GetTechnicalSkillsFromOpenAI(resumeExtractPrompt);
             await GetApplicantdetails(resultResumeText, resumedto);
 
-
-            string resultJobDescriptionText = String.Join(" ", text2);
-            string jobDescriptionPrompt = $"Extract only the job description skills from the following text:\n\n{resultJobDescriptionText}\n\nReturn as a comma-separated list.";
-            string jobDescriptionSkills = await GetTechnicalSkillsFromOpenAI(jobDescriptionPrompt);
-
             List<float> resumeEmbedding = await GetEmbeddingAsync(deploymentName, ApplicantSkills);
             List<float> jobDescriptionEmbedding = await GetEmbeddingAsync(deploymentName, jobDescriptionSkills);
             double embedScore = CosineSimilarity(jobDescriptionEmbedding, resumeEmbedding);
             (double gptScore, string summary, List<string> missing) =await GetMatchingScore(ApplicantSkills, jobDescriptionSkills);
             resumedto.ProfileScore= (gptScore * 0.7) + (embedScore * 0.3);
-            resumedto.Summary= summary;            
+            resumedto.Summary= summary;
+            string[] arrayResult = resultResumeText.Split(',');
+            List<string> resultList = new List<string>(arrayResult);
+
+            ResumeAnalyzeHelper analyzeHelper = new ResumeAnalyzeHelper();
+            Resume_Details_Model resume_Details = new Resume_Details_Model();
+            resumedto.SkillsText = ApplicantSkills;
+            analyzeHelper.PopulateResumeDTO(resume_Details, resumedto,job_Description_Model);
+            var resumeResult = await InsertResumeDetails(resume_Details);
         }
 
         static async Task<List<float>> GetEmbeddingAsync(string deploymentName, string text)
@@ -155,8 +167,32 @@ namespace DocumentSimilarityComparison.AzureHelper
             return extractedSkills;
         }
 
+        static async Task<Resume_Details_Model> InsertResumeDetails(Resume_Details_Model resume_Details)
+        {
+            var options = new DbContextOptionsBuilder<DocumentDbContext>()
+                .UseSqlServer("Server=10.3.117.39\\SQLSERVER;Database=Innovators;Trusted_Connection=True;")
+                .Options;
+
+            using var context = new DocumentDbContext(options);
+            var docSimilarity = new DocSimilarity(context);
+            var resumeResult = await docSimilarity.CreateResumeAsync(resume_Details);
+            return resumeResult;
+        }
+
+        static async Task<Job_Description_Model> InsertJobDescriptionDetails(Job_Description_Model job_Description_Model)
+        {
+            var options = new DbContextOptionsBuilder<DocumentDbContext>()
+                .UseSqlServer("Server=10.3.117.39\\SQLSERVER;Database=Innovators;Trusted_Connection=True;")
+                .Options;
+
+            using var context = new DocumentDbContext(options);
+            var docSimilarity = new DocSimilarity(context);
+            var resumeResult = await docSimilarity.CreateResumeAsync(job_Description_Model);
+            return resumeResult;
+        }
+
         #region using Azure open AI to get the text from pdf
-        
+
         static async Task<string> GetTechnicalSkillsFromOpenAI(string prompt)
         {
             //string endpoint = "https://innovatorsopenairesource.openai.azure.com/";
@@ -190,6 +226,59 @@ namespace DocumentSimilarityComparison.AzureHelper
             string[] arrayResult = commaSeparatedResult.Split(',');
             List<string> resultList = new List<string>(arrayResult);
             return commaSeparatedResult;
+        }
+
+        public static async Task GetJobDescriptiondetails(string jobDescriptionDetails, Job_Description_Model JdDetails)
+        {
+            string endpoint = "https://innovatorsopenairesource.openai.azure.com/openai/deployments/gpt-4.1/chat/completions?api-version=2025-01-01-preview";
+            string apiKey = "81TfYFL0O1bkvbNzvWaoqrq63dJUDYS0OS3O9RUiOl08FUkE1g2TJQQJ99BFACYeBjFXJ3w3AAABACOGCq2N";
+            string deploymentName = "gpt-4.1"; // or your model deployment
+            string apiVersion = "api-version=2025-01-01-preview"; // Or latest supported version
+
+            using var client = new HttpClient();
+            client.BaseAddress = new Uri(endpoint);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+
+            var prompt = $@"
+                Extract the following from this jobdescription text:
+                - JobTitle
+                - JobDescription
+
+                Resume:
+                {jobDescriptionDetails}
+
+                Return the result as JSON:
+                {{ ""JobTitle"": ""..."", ""JobDescription"": ""..."" }}
+                ";
+
+            var payload = new
+            {
+                messages = new[]
+                {
+            new { role = "system", content = "You are a resume parser." },
+            new { role = "user", content = prompt }
+        },
+                temperature = 0,
+                max_tokens = 150
+            };
+
+            var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
+
+            var response = await client.PostAsync(endpoint, content);
+
+            var json = JObject.Parse(await response.Content.ReadAsStringAsync());
+            string reply = json["choices"]?[0]?["message"]?["content"]?.ToString() ?? "{}";
+
+            try
+            {
+                var data = JObject.Parse(reply);
+                JdDetails.JdTitle = data["jobtitle"]?.ToString()?.Trim();
+                JdDetails.Description = data["jobdescription"]?.ToString()?.Trim();
+            }
+            catch
+            {
+                Console.WriteLine("⚠️ GPT response parse failed. Raw: " + reply);
+            }
         }
 
         public static async Task GetApplicantdetails(string resumeDetails,ResumeDTO applicant)

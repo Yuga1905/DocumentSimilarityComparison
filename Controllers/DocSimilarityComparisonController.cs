@@ -2,6 +2,7 @@
 using DocumentSimilarityComparison.DTO;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
+using System.IO;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -14,20 +15,10 @@ namespace DocumentSimilarityComparison.Controllers
         // GET: api/<DocSimilarityComparisonController>
         [HttpGet]
         //public IEnumerable<string> Get()
-        public async Task<List<ResumeDTO>> Get()
-        {
-            string jobDescription = "Looking for a developer who has experience in Python,Java and AI development ";
-            //string jobDescription = "Looking for a developer who has experience in c# and .NET ";
-            //List<ResumeDTO> resumeList = new List<ResumeDTO>();
-            //resumeList.Add(new ResumeDTO { ApplicantName = "John", JobDescription = "Experience in c#,.NET and AI development", ApplicantEmailId="test@gmail.com" });
-            //resumeList.Add(new ResumeDTO { ApplicantName = "Kevin", JobDescription = "Skilled in Python, Machine Learning and Data Science", ApplicantEmailId = "yugashini1905@gmail.com" });
-            //resumeList.Add(new ResumeDTO { ApplicantName = "Sara", JobDescription = "Expertise in Java, Spring boot and Microservices", ApplicantEmailId = "sample@gmail.com" });
+        //public async Task<List<ResumeDTO>> Get()
+        //{
             
-            List<ResumeDTO> matchedResumes = await ComparisonAgent.MatchResumesWithJobDescription(jobDescription);
-            List<ResumeDTO> RankedResumes = await RankingAgent.RankResumesWithScore(matchedResumes);
-            bool communicationSent = await CommunicationAgent.SendEmailWithRank(RankedResumes);
-            return matchedResumes;
-        }
+        //}
 
         // GET api/<DocSimilarityComparisonController>/5
         [HttpGet("{id}")]
@@ -38,8 +29,24 @@ namespace DocumentSimilarityComparison.Controllers
 
         // POST api/<DocSimilarityComparisonController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task Post(IFormFile file)
         {
+            
+            var jobDescriptionPath = Path.Combine("C:\\Users\\1000055632\\source\\repos\\DocumentSimilarityComparison\\DocumentSimilarityComparison\\Resources\\JobDescription", file.FileName);
+
+            using (var stream = new FileStream(jobDescriptionPath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            
+            //string jobDescription = "Looking for a developer who has experience in Python,Java and AI development ";
+            //string jobDescription = "Looking for a developer who has experience in c# and .NET ";
+            
+            List<ResumeDTO> matchedResumes = await ComparisonAgent.MatchResumesWithJobDescription(jobDescriptionPath);
+            List<ResumeDTO> RankedResumes = await RankingAgent.RankResumesWithScore(matchedResumes);
+            bool communicationSent = await CommunicationAgent.SendEmailWithRank(RankedResumes);
+            
         }
 
         // PUT api/<DocSimilarityComparisonController>/5

@@ -1,5 +1,6 @@
 ﻿using DocumentSimilarityComparison;
 using DocumentSimilarityComparison.Models;
+using DocumentSimilarityComparison.Utility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -22,11 +23,19 @@ public class ResumeDetailController : ControllerBase
         return requestor == null ? NotFound() : Ok(requestor);
     }
 
-    [HttpPost]
-    public async Task<ActionResult> Create(Resume_Details_Model resumeDetail)
-    {
-        _context.ResumeDetails.Add(resumeDetail);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(Get), new { id = resumeDetail.Id }, resumeDetail);
-    }   
+    //[HttpPost]
+    //public async Task<ActionResult> Create(Resume_Details_Model resumeDetail)
+    //{
+    //    _requestService.CreateAsync(resumeDetail);
+    //    //_context.ResumeDetails.Add(resumeDetail);
+    //    await _context.SaveChangesAsync();
+    //    return CreatedAtAction(nameof(Get), new { id = resumeDetail.Id }, resumeDetail);
+    //}
+
+    //[HttpPost]
+    //public async Task<ActionResult<Resume_Details_Model>> Post(Resume_Details_Model resumeDetail)
+    //{
+    //    var result = await _requestService.CreateResumeAsync(resumeDetail);
+    //    return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
+    //}
 }

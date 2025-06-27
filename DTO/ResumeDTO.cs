@@ -2,13 +2,16 @@
 {
     public class ResumeDTO
     {
+        public int JDId { get; set; }
         public string ApplicantName { get; set; }
         public string JobDescription { get; set; }
         public double ProfileScore { get; set; }
         public string ProfileMatchingPercentage { get; set; }
         public int Rank { get; set; }
         public string ApplicantEmailId { get; set; }
+        public string SkillsText { get; set; }
         public string Summary { get; internal set; }
         public int Experience { get; internal set; }
+        public List<string> Skills { get; internal set; }
     }
 }
