@@ -26,5 +26,12 @@ namespace DocumentSimilarityComparison.Utility
             return jobDescriptionDetail;
         }
 
+        public async Task<Requestor_Model> CreateResumeAsync(Requestor_Model requestor_Model)
+        {
+            _context.Requestors.Add(requestor_Model);
+            await _context.SaveChangesAsync();
+            return requestor_Model;
+        }
+
     }
 }

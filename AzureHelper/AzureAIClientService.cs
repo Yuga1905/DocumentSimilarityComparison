@@ -191,6 +191,18 @@ namespace DocumentSimilarityComparison.AzureHelper
             return resumeResult;
         }
 
+        public static async Task<Requestor_Model> InsertRequestorDetails(Requestor_Model requestor_Model)
+        {
+            var options = new DbContextOptionsBuilder<DocumentDbContext>()
+                .UseSqlServer("Server=10.3.117.39\\SQLSERVER;Database=Innovators;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True;")
+                .Options;
+
+            using var context = new DocumentDbContext(options);
+            var docSimilarity = new DocSimilarity(context);
+            var resumeResult = await docSimilarity.CreateResumeAsync(requestor_Model);
+            return resumeResult;
+        }
+
         #region using Azure open AI to get the text from pdf
 
         static async Task<string> GetTechnicalSkillsFromOpenAI(string prompt)

@@ -6,7 +6,7 @@ namespace DocumentSimilarityComparison.AgentHelper
 {
     public static class CommunicationAgent
     {
-        public static async Task<bool> SendEmailWithRank(JobDescriptionDTO jobDescription)
+        public static async Task<string> SendEmailWithRank(JobDescriptionDTO jobDescription)
         {
             ResumeDTO resumeDTO = jobDescription.Resumes.FirstOrDefault();
             string fromEmail = "yugashini1905@gmail.com";
@@ -26,12 +26,12 @@ namespace DocumentSimilarityComparison.AgentHelper
                 //smtpClient.UseDefaultCredentials = false;
 
                 //smtpClient.Send(mailMessage);
-                return true;
+                return "true";
                 
             }
             catch(Exception ex)
             {
-                return false;
+                return "false";
             }
         }
     }

@@ -1,5 +1,7 @@
 ﻿using DocumentSimilarityComparison.AgentHelper;
+using DocumentSimilarityComparison.AzureHelper;
 using DocumentSimilarityComparison.DTO;
+using DocumentSimilarityComparison.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
 using System.IO;
@@ -41,7 +43,12 @@ namespace DocumentSimilarityComparison.Controllers
 
             JobDescriptionDTO matchedResumes = await ComparisonAgent.MatchResumesWithJobDescription(jobDescriptionPath);
             JobDescriptionDTO RankedResumes = await RankingAgent.RankResumesWithScore(matchedResumes);
-            bool communicationSent = await CommunicationAgent.SendEmailWithRank(RankedResumes);
+            string communicationSent = await CommunicationAgent.SendEmailWithRank(RankedResumes);
+            Requestor_Model requestor_Model = new Requestor_Model();
+            requestor_Model.ComparisonStatus = "true";
+            requestor_Model.CommunicationStatus = communicationSent;
+            requestor_Model.JdId = matchedResumes.JdID;
+            AzureAIClientService.InsertRequestorDetails(requestor_Model);
             if (System.IO.File.Exists(jobDescriptionPath))
             {
                 System.IO.File.Delete(jobDescriptionPath);
