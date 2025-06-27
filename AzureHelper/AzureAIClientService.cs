@@ -37,8 +37,8 @@ namespace DocumentSimilarityComparison.AzureHelper
             string resultJobDescriptionText = String.Join(" ", jobDescriptionText);
             string jobDescriptionPrompt = $"Extract only the job description skills from the following text:\n\n{resultJobDescriptionText}\n\nReturn as a comma-separated list.";
             string jobDescriptionSkills = await GetTechnicalSkillsFromOpenAI(jobDescriptionPrompt);
-            GetJobDescriptiondetails(resultJobDescriptionText, job_Description_Model);
-            InsertJobDescriptionDetails(job_Description_Model);
+            await GetJobDescriptiondetails(resultJobDescriptionText, job_Description_Model);
+            await InsertJobDescriptionDetails(job_Description_Model);
             return (resultJobDescriptionText,job_Description_Model);
         }
 
@@ -170,7 +170,7 @@ namespace DocumentSimilarityComparison.AzureHelper
         static async Task<Resume_Details_Model> InsertResumeDetails(Resume_Details_Model resume_Details)
         {
             var options = new DbContextOptionsBuilder<DocumentDbContext>()
-                .UseSqlServer("Server=10.3.117.39\\SQLSERVER;Database=Innovators;Trusted_Connection=True;")
+                .UseSqlServer("Server=10.3.117.39\\SQLSERVER;Database=Innovators;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True;")
                 .Options;
 
             using var context = new DocumentDbContext(options);
@@ -182,7 +182,7 @@ namespace DocumentSimilarityComparison.AzureHelper
         static async Task<Job_Description_Model> InsertJobDescriptionDetails(Job_Description_Model job_Description_Model)
         {
             var options = new DbContextOptionsBuilder<DocumentDbContext>()
-                .UseSqlServer("Server=10.3.117.39\\SQLSERVER;Database=Innovators;Trusted_Connection=True;")
+                .UseSqlServer("Server=10.3.117.39\\SQLSERVER;Database=Innovators;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True;")
                 .Options;
 
             using var context = new DocumentDbContext(options);
@@ -272,8 +272,8 @@ namespace DocumentSimilarityComparison.AzureHelper
             try
             {
                 var data = JObject.Parse(reply);
-                JdDetails.JdTitle = data["jobtitle"]?.ToString()?.Trim();
-                JdDetails.Description = data["jobdescription"]?.ToString()?.Trim();
+                JdDetails.JdTitle = data["JobTitle"]?.ToString()?.Trim();
+                JdDetails.Description = data["JobDescription"]?.ToString()?.Trim();
             }
             catch
             {

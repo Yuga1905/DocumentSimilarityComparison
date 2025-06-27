@@ -16,8 +16,7 @@ namespace DocumentSimilarityComparison.AgentHelper
             foreach (string pdfPath in pdfFiles)
             {
                 ResumeDTO resumeDTO = new ResumeDTO();
-                await AzureHelper.AzureAIClientService.GetComparisonScoreAsync(pdfPath, resumeDTO, resultJobDescriptionText, job_Description_Model);
-                resumeDTO.ProfileMatchingPercentage = (resumeDTO.ProfileScore * 100).ToString("F2") + "%"; ;
+                await AzureHelper.AzureAIClientService.GetComparisonScoreAsync(pdfPath, resumeDTO, resultJobDescriptionText, job_Description_Model); 
                 shortlistedResumes.Add(resumeDTO);
             }
             

@@ -12,8 +12,7 @@ namespace DocumentSimilarityComparison.Utility
             resume_Details.Skills = resumedto.SkillsText;
             resume_Details.JdId = job_Description_Model.JdId;
             resume_Details.Experience = resumedto.Experience;
-            resume_Details.Score = Convert.ToDecimal(resumedto.ProfileScore);
-            //resume_Details.Id = resumedto.Id;
+            resume_Details.Score = Math.Round((decimal)(resumedto.ProfileScore * 100), 2);
         }
     }
 }
