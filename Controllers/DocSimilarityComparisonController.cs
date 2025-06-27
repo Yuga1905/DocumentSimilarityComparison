@@ -39,14 +39,14 @@ namespace DocumentSimilarityComparison.Controllers
                 await file.CopyToAsync(stream);
             }
 
-            
-            //string jobDescription = "Looking for a developer who has experience in Python,Java and AI development ";
-            //string jobDescription = "Looking for a developer who has experience in c# and .NET ";
-            
-            List<ResumeDTO> matchedResumes = await ComparisonAgent.MatchResumesWithJobDescription(jobDescriptionPath);
-            List<ResumeDTO> RankedResumes = await RankingAgent.RankResumesWithScore(matchedResumes);
+            JobDescriptionDTO matchedResumes = await ComparisonAgent.MatchResumesWithJobDescription(jobDescriptionPath);
+            JobDescriptionDTO RankedResumes = await RankingAgent.RankResumesWithScore(matchedResumes);
             bool communicationSent = await CommunicationAgent.SendEmailWithRank(RankedResumes);
-            
+            if (System.IO.File.Exists(jobDescriptionPath))
+            {
+                System.IO.File.Delete(jobDescriptionPath);
+            }
+
         }
 
         // PUT api/<DocSimilarityComparisonController>/5

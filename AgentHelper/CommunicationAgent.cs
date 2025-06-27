@@ -6,9 +6,9 @@ namespace DocumentSimilarityComparison.AgentHelper
 {
     public static class CommunicationAgent
     {
-        public static async Task<bool> SendEmailWithRank(List<ResumeDTO> resumes)
+        public static async Task<bool> SendEmailWithRank(JobDescriptionDTO jobDescription)
         {
-            ResumeDTO resumeDTO = resumes.FirstOrDefault();
+            ResumeDTO resumeDTO = jobDescription.Resumes.FirstOrDefault();
             string fromEmail = "yugashini1905@gmail.com";
             string fromEmailPassword = "test";
             try
@@ -27,6 +27,7 @@ namespace DocumentSimilarityComparison.AgentHelper
 
                 //smtpClient.Send(mailMessage);
                 return true;
+                
             }
             catch(Exception ex)
             {

@@ -6,9 +6,9 @@ namespace DocumentSimilarityComparison.AgentHelper
 {
     public static class ComparisonAgent
     {
-        public static async Task<List<ResumeDTO>> MatchResumesWithJobDescription(string jobDescriptionPath)
+        public static async Task<JobDescriptionDTO> MatchResumesWithJobDescription(string jobDescriptionPath)
         {
-            List<ResumeDTO> shortlistedResumes = new List<ResumeDTO>();
+            JobDescriptionDTO jobDescriptionDTO = new JobDescriptionDTO();
             string folderPath = @"C:\Users\1000055632\source\repos\DocumentSimilarityComparison\DocumentSimilarityComparison\Resources\JobApplicantsResume";
             string[] pdfFiles = Directory.GetFiles(folderPath, "*.pdf");
             Job_Description_Model job_Description_Model=new Job_Description_Model();
@@ -16,12 +16,11 @@ namespace DocumentSimilarityComparison.AgentHelper
             foreach (string pdfPath in pdfFiles)
             {
                 ResumeDTO resumeDTO = new ResumeDTO();
-                await AzureHelper.AzureAIClientService.GetComparisonScoreAsync(pdfPath, resumeDTO, resultJobDescriptionText, job_Description_Model); 
-                shortlistedResumes.Add(resumeDTO);
+                await AzureHelper.AzureAIClientService.GetComparisonScoreAsync(pdfPath, resumeDTO, resultJobDescriptionText, job_Description_Model);
+                jobDescriptionDTO.Resumes.Add(resumeDTO);
             }
-            
-            
-            return shortlistedResumes;
+            jobDescriptionDTO.JdID = job_Description_Model.JdId;            
+            return jobDescriptionDTO;
         }
     }
 }
