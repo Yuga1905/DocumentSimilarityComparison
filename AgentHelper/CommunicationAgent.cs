@@ -26,12 +26,12 @@ namespace DocumentSimilarityComparison.AgentHelper
                 //smtpClient.UseDefaultCredentials = false;
 
                 //smtpClient.Send(mailMessage);
-                return "true";
+                return "Communication Sent";
                 
             }
             catch(Exception ex)
             {
-                return "false";
+                return "Communication Failed";
             }
         }
     }

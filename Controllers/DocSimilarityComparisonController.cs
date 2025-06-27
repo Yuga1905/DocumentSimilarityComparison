@@ -45,10 +45,14 @@ namespace DocumentSimilarityComparison.Controllers
             JobDescriptionDTO RankedResumes = await RankingAgent.RankResumesWithScore(matchedResumes);
             string communicationSent = await CommunicationAgent.SendEmailWithRank(RankedResumes);
             Requestor_Model requestor_Model = new Requestor_Model();
-            requestor_Model.ComparisonStatus = "true";
+            requestor_Model.ComparisonStatus = "Comparision Completed";
             requestor_Model.CommunicationStatus = communicationSent;
-            requestor_Model.JdId = matchedResumes.JdID;
-            AzureAIClientService.InsertRequestorDetails(requestor_Model);
+            if(matchedResumes.JdID != 0 || matchedResumes.JdID > 0)
+            {
+                requestor_Model.JdId = matchedResumes.JdID;
+                await AzureAIClientService.InsertRequestorDetails(requestor_Model);
+            }            
+            
             if (System.IO.File.Exists(jobDescriptionPath))
             {
                 System.IO.File.Delete(jobDescriptionPath);
