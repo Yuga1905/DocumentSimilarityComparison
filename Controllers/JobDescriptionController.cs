@@ -13,7 +13,23 @@ public class JobDescriptionController : ControllerBase
     public JobDescriptionController(DocumentDbContext context) => _context = context;
 
     [HttpGet]
-    public async Task<ActionResult> GetAll() => Ok(await _context.JobDescriptions.ToListAsync());
+    public async Task<ActionResult> GetAll()
+    {
+        var jobDescriptions = await _context.JobDescriptions
+        .Include(jd => jd.Requestors)
+        .Include(jd => jd.ResumeDetails)
+        .Select(jd => new
+        {
+            jd.JdId,
+            jd.JdTitle,
+            jd.Description,
+            Requestors = jd.Requestors.Select(r => new { r.JdId,r.Id,r.CommunicationStatus,r.ComparisonStatus }),
+            ResumeDetails = jd.ResumeDetails.Select(rd => new { rd.JdId,rd.Id,rd.Name,rd.Skills,rd.Email,rd.Experience,rd.Score })
+        })
+        .ToListAsync();
+
+        return Ok(jobDescriptions);
+    }
 
     [HttpGet("{id}")]
     public async Task<ActionResult> Get(int id)
