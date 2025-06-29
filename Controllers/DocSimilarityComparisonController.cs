@@ -31,7 +31,7 @@ namespace DocumentSimilarityComparison.Controllers
 
         // POST api/<DocSimilarityComparisonController>
         [HttpPost]
-        public async Task Post(IFormFile file)
+        public async Task Post(IFormFile file, string RequestorEmailId)
         {
             
             var jobDescriptionPath = Path.Combine("C:\\Users\\1000055632\\source\\repos\\DocumentSimilarityComparison\\DocumentSimilarityComparison\\Resources\\JobDescription", file.FileName);
@@ -43,7 +43,7 @@ namespace DocumentSimilarityComparison.Controllers
 
             JobDescriptionDTO matchedResumes = await ComparisonAgent.MatchResumesWithJobDescription(jobDescriptionPath);
             JobDescriptionDTO RankedResumes = await RankingAgent.RankResumesWithScore(matchedResumes);
-            string communicationSent = await CommunicationAgent.SendEmailWithRank(RankedResumes);
+            string communicationSent = await CommunicationAgent.SendEmailWithRank(RankedResumes, RequestorEmailId);
             Requestor_Model requestor_Model = new Requestor_Model();
             requestor_Model.ComparisonStatus = "Comparision Completed";
             requestor_Model.CommunicationStatus = communicationSent;

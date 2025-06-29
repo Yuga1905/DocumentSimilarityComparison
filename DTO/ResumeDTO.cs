@@ -12,6 +12,7 @@
         public string SkillsText { get; set; }
         public string Summary { get; internal set; }
         public int Experience { get; internal set; }
+        public string PdfPath { get; set; }
         public List<string> Skills { get; internal set; }
     }
 }

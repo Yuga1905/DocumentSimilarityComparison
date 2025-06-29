@@ -15,6 +15,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Graph" Version="5.83.0" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.73.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="PdfPig" Version="0.1.10" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />

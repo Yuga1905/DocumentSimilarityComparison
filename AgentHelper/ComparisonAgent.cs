@@ -16,6 +16,7 @@ namespace DocumentSimilarityComparison.AgentHelper
             foreach (string pdfPath in pdfFiles)
             {
                 ResumeDTO resumeDTO = new ResumeDTO();
+                resumeDTO.PdfPath = pdfPath;
                 await AzureHelper.AzureAIClientService.GetComparisonScoreAsync(pdfPath, resumeDTO, resultJobDescriptionText, job_Description_Model);
                 jobDescriptionDTO.Resumes.Add(resumeDTO);
             }

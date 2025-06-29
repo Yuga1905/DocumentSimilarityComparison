@@ -7,15 +7,14 @@ namespace DocumentSimilarityComparison.AgentHelper
     {
         public static async Task<JobDescriptionDTO> RankResumesWithScore(JobDescriptionDTO resumes)
         {
-            //int rankCount = 1;
+            int rankCount = 1;
             JobDescriptionDTO rankedResumes = new JobDescriptionDTO();
-            rankedResumes.Resumes = rankedResumes.Resumes.OrderByDescending(x => x.ProfileScore).ToList();
-            //foreach(ResumeDTO resume in rankedResumes.Resumes)
-            //{
-            //    resume.Rank = rankCount;
-            //    rankCount++;
-            //    rankedResumes.Add(resume);
-            //}
+            foreach (ResumeDTO resume in resumes.Resumes.OrderByDescending(x => x.ProfileScore).ToList())
+            {
+                resume.Rank = rankCount;
+                rankCount++;
+                rankedResumes.Resumes.Add(resume);
+            }
             rankedResumes.JdID = resumes.JdID;
             return rankedResumes;
         }
