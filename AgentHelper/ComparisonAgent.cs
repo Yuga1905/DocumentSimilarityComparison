@@ -20,7 +20,8 @@ namespace DocumentSimilarityComparison.AgentHelper
                 await AzureHelper.AzureAIClientService.GetComparisonScoreAsync(pdfPath, resumeDTO, resultJobDescriptionText, job_Description_Model);
                 jobDescriptionDTO.Resumes.Add(resumeDTO);
             }
-            jobDescriptionDTO.JdID = job_Description_Model.JdId;            
+            jobDescriptionDTO.JdID = job_Description_Model.JdId;
+            jobDescriptionDTO.JobTitle = job_Description_Model.JdTitle;
             return jobDescriptionDTO;
         }
     }

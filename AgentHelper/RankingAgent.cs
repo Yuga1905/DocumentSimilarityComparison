@@ -16,6 +16,7 @@ namespace DocumentSimilarityComparison.AgentHelper
                 rankedResumes.Resumes.Add(resume);
             }
             rankedResumes.JdID = resumes.JdID;
+            rankedResumes.JobTitle = resumes.JobTitle;
             return rankedResumes;
         }
     }

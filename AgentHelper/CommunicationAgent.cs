@@ -21,15 +21,23 @@ namespace DocumentSimilarityComparison.AgentHelper
                 MailMessage mailMessage = new MailMessage();
                 mailMessage.From = new MailAddress(fromEmail);
                 mailMessage.To.Add(requestorMailId);
-                mailMessage.Subject = "Job Opportunity at Our Company";
-                mailMessage.Body = "Please find the shortlisted resume in the attachment";
+                mailMessage.Subject = string.Format("Top Applicants for {0}",jobDescription.JobTitle);
+                mailMessage.Body = "Dear AR Requestor\n";
+                mailMessage.Body += "Please find the shortlisted resume in the attachment\n\n";
 
                 SmtpClient smtpClient = new SmtpClient("smtp.gmail.com", 587);
                 smtpClient.Credentials = new NetworkCredential(fromEmail, fromEmailPassword);
                 smtpClient.EnableSsl = true;
                 smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
                 smtpClient.UseDefaultCredentials = false;
-                foreach(ResumeDTO resume in jobDescription.Resumes)
+                foreach (ResumeDTO resume in jobDescription.Resumes)
+                {
+                    if (resume.Rank >= 1 && resume.Rank <= 3)
+                    {
+                        mailMessage.Body += string.Format("{0} Profile matched with {1}%. {2}\n\n",resume.ApplicantName, Math.Round((decimal)(resume.ProfileScore * 100), 2), resume.Summary);
+                    }
+                }
+                foreach (ResumeDTO resume in jobDescription.Resumes)
                 {
                     if(resume.Rank>=1 && resume.Rank<=3)
                     {
