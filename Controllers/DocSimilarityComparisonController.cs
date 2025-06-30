@@ -31,10 +31,11 @@ namespace DocumentSimilarityComparison.Controllers
 
         // POST api/<DocSimilarityComparisonController>
         [HttpPost]
-        public async Task Post(IFormFile file, string RequestorEmailId)
+        public async Task<IActionResult> Post(IFormFile file, string RequestorEmailId)
         {
             
             var jobDescriptionPath = Path.Combine("C:\\Users\\1000055632\\source\\repos\\DocumentSimilarityComparison\\DocumentSimilarityComparison\\Resources\\JobDescription", file.FileName);
+            //var jobDescriptionPath = Path.Combine("C:\\Users\\2000112352\\source\\repos\\Backend\\DocumentSimilarityComparison\\Resources\\JobDescription", file.FileName);
 
             using (var stream = new FileStream(jobDescriptionPath, FileMode.Create))
             {
@@ -44,19 +45,29 @@ namespace DocumentSimilarityComparison.Controllers
             JobDescriptionDTO matchedResumes = await ComparisonAgent.MatchResumesWithJobDescription(jobDescriptionPath);
             JobDescriptionDTO RankedResumes = await RankingAgent.RankResumesWithScore(matchedResumes);
             string communicationSent = await CommunicationAgent.SendEmailWithRank(RankedResumes, RequestorEmailId);
-            Requestor_Model requestor_Model = new Requestor_Model();
-            requestor_Model.ComparisonStatus = "Comparision Completed";
-            requestor_Model.CommunicationStatus = communicationSent;
-            if(matchedResumes.JdID != 0 || matchedResumes.JdID > 0)
+
+            var requestor_Model = new Requestor_Model
+            {
+                ComparisonStatus = "Comparision Completed",
+                CommunicationStatus = communicationSent,
+            };
+
+            if (matchedResumes.JdID > 0)
             {
                 requestor_Model.JdId = matchedResumes.JdID;
                 await AzureAIClientService.InsertRequestorDetails(requestor_Model);
-            }            
-            
+            }
+
             if (System.IO.File.Exists(jobDescriptionPath))
             {
                 System.IO.File.Delete(jobDescriptionPath);
             }
+            return Ok(new
+            {
+                message = "Upload and processing completed successfully",
+                jdId = matchedResumes.JdID,
+                status = requestor_Model.CommunicationStatus
+            });
 
         }
 
