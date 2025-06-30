@@ -22,7 +22,7 @@ namespace DocumentSimilarityComparison.AgentHelper
                 mailMessage.From = new MailAddress(fromEmail);
                 mailMessage.To.Add(requestorMailId);
                 mailMessage.Subject = string.Format("Top Applicants for {0}",jobDescription.JobTitle);
-                mailMessage.Body = "Dear AR Requestor\n";
+                mailMessage.Body = "Dear AR Requestor,\n";
                 mailMessage.Body += "Please find the shortlisted resume in the attachment\n\n";
 
                 SmtpClient smtpClient = new SmtpClient("smtp.gmail.com", 587);
