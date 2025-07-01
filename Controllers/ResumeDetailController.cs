@@ -14,7 +14,17 @@ public class ResumeDetailController : ControllerBase
     public ResumeDetailController(DocumentDbContext context) => _context = context;
 
     [HttpGet]
-    public async Task<ActionResult> GetAll() => Ok(await _context.ResumeDetails.ToListAsync());
+    public async Task<ActionResult> GetAll()
+    {
+        var allResumes = await _context.ResumeDetails.ToListAsync();
+
+        var distinctResumes = allResumes
+            .GroupBy(r => r.Email)                       // Group by email
+            .Select(g => g.OrderByDescending(r => r.Score).First()) // Take highest score
+            .ToList();
+
+        return Ok(distinctResumes);
+    }
 
     [HttpGet("{id}")]
     public async Task<ActionResult> Get(int id)
