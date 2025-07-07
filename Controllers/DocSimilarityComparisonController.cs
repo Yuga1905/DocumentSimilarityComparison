@@ -3,11 +3,11 @@
 using DocumentSimilarityComparison.AzureHelper;
 
 using DocumentSimilarityComparison.DTO;
-
+using DocumentSimilarityComparison.HubHelper;
 using DocumentSimilarityComparison.Models;
 
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.AspNetCore.SignalR;
 using System.ComponentModel;
 
 using System.IO;
@@ -26,11 +26,12 @@ namespace DocumentSimilarityComparison.Controllers
     {
 
         private readonly IWebHostEnvironment _env;
+        private readonly IHubContext<ResumeHub> _hubContext;
 
-        public DocSimilarityComparisonController(IWebHostEnvironment env)
+        public DocSimilarityComparisonController(IWebHostEnvironment env,IHubContext<ResumeHub> hubContext)
 
         {
-
+            _hubContext = hubContext;
             _env = env;
 
         }
@@ -84,9 +85,7 @@ namespace DocumentSimilarityComparison.Controllers
             using (var stream = new FileStream(jobDescriptionPath, FileMode.Create))
 
             {
-
                 await file.CopyToAsync(stream);
-
             }
 
             // 2. Get Resume folder path (Resources/JobApplicantsResume)
@@ -94,6 +93,30 @@ namespace DocumentSimilarityComparison.Controllers
             string resumesFolderPath = Path.Combine(_env.ContentRootPath, "Resources", "JobApplicantsResume");
 
             // 3. Pass both paths to ComparisonAgent
+            #region Testing SignalR
+
+            JobDescriptionDTO compareAllResumes = new JobDescriptionDTO();
+
+            string[] pdfFiles = Directory.GetFiles(resumesFolderPath, "*.pdf");
+
+            Job_Description_Model job_Description_Model = new Job_Description_Model();
+            (string resultJobDescriptionText, job_Description_Model) =
+                await AzureHelper.AzureAIClientService.GetJobDescription(jobDescriptionPath, job_Description_Model);
+            await _hubContext.Clients.All.SendAsync("JobDescriptionUploaded");
+            foreach (string pdfPath in pdfFiles)
+            {
+                ResumeDTO resumeDTO = new ResumeDTO
+                {
+                    PdfPath = pdfPath
+                };
+                await AzureHelper.AzureAIClientService.GetComparisonScoreAsync(pdfPath, resumeDTO, resultJobDescriptionText, job_Description_Model);
+                compareAllResumes.Resumes.Add(resumeDTO);
+                await _hubContext.Clients.All.SendAsync("ResumeUpdated");
+                await Task.Delay(1000);
+            }
+
+            
+            #endregion
 
             JobDescriptionDTO matchedResumes = await ComparisonAgent.MatchResumesWithJobDescription(jobDescriptionPath, resumesFolderPath);
 
@@ -137,19 +160,10 @@ namespace DocumentSimilarityComparison.Controllers
                 status = requestor_Model.CommunicationStatus
             });
 
-            return Ok(new
-
-            {
-
-                message = "Upload and processing completed successfully",
-
-                jdId = matchedResumes.JdID,
-
-                status = requestor_Model.CommunicationStatus
-
-            });
 
         }
+
+       
 
 
         // PUT api/<DocSimilarityComparisonController>/5

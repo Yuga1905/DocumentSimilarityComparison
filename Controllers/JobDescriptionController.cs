@@ -34,8 +34,41 @@ public class JobDescriptionController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult> Get(int id)
     {
-        var job = await _context.JobDescriptions.FindAsync(id);
-        return job == null ? NotFound() : Ok(job);
+        var jobDescription = await _context.JobDescriptions
+        .Include(jd => jd.Requestors)
+        .Include(jd => jd.ResumeDetails)
+        .Where(jd => jd.JdId == id)
+        .Select(jd => new
+        {
+            jd.JdId,
+            jd.JdTitle,
+            jd.Description,
+            Requestors = jd.Requestors.Select(r => new
+            {
+                r.JdId,
+                r.Id,
+                r.CommunicationStatus,
+                r.ComparisonStatus
+            }),
+            ResumeDetails = jd.ResumeDetails.Select(rd => new
+            {
+                rd.JdId,
+                rd.Id,
+                rd.Name,
+                rd.Skills,
+                rd.Email,
+                rd.Experience,
+                rd.Score
+            })
+        })
+        .FirstOrDefaultAsync();
+
+        if (jobDescription == null)
+        {
+            return NotFound($"Job Description with ID {id} not found.");
+        }
+
+        return Ok(jobDescription);
     }
 
     [HttpPost]

@@ -1,4 +1,5 @@
 using DocumentSimilarityComparison;
+using DocumentSimilarityComparison.HubHelper;
 using Microsoft.EntityFrameworkCore;
 using System;
 
@@ -17,11 +18,14 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", policy =>
     {
         policy
-            .AllowAnyOrigin()   // Or use .WithOrigins("http://localhost:3000") for specific domain
+            //.AllowAnyOrigin()   // Or use .WithOrigins("http://localhost:3000") for specific domain
+            .WithOrigins("http://localhost:3000")
             .AllowAnyMethod()
-            .AllowAnyHeader();
+            .AllowAnyHeader()
+            .AllowCredentials();
     });
 });
+builder.Services.AddSignalR();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -36,5 +40,7 @@ app.UseCors("AllowAll");
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<ResumeHub>("/resumeHub");
 
 app.Run();
