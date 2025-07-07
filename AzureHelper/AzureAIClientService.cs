@@ -22,7 +22,7 @@ namespace DocumentSimilarityComparison.AzureHelper
 {
     public static class AzureAIClientService
     {
-
+        private static readonly string connectionString = "Server=tcp:innovatorssqlserver.database.windows.net;Initial Catalog=Innovators;Persist Security Info=False;User ID=AdminInnovators;Password=Admin123;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
         private static readonly string azureEndpoint = "https://innovatorsopenairesource.openai.azure.com/";
         private static readonly string azureAPIKey = "81TfYFL0O1bkvbNzvWaoqrq63dJUDYS0OS3O9RUiOl08FUkE1g2TJQQJ99BFACYeBjFXJ3w3AAABACOGCq2N";
         private static readonly string azureLanguageAPIPath = "/language/:analyze-text?api-version=2023-04-01";
@@ -167,10 +167,10 @@ namespace DocumentSimilarityComparison.AzureHelper
             return extractedSkills;
         }
 
-        static async Task<Resume_Details_Model> InsertResumeDetails(Resume_Details_Model resume_Details)
+        private static async Task<Resume_Details_Model> InsertResumeDetails(Resume_Details_Model resume_Details)
         {
             var options = new DbContextOptionsBuilder<DocumentDbContext>()
-                .UseSqlServer("Server=10.3.117.39\\SQLSERVER;Database=Innovators;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True;")
+                .UseSqlServer(connectionString)
                 .Options;
 
             using var context = new DocumentDbContext(options);
@@ -179,10 +179,10 @@ namespace DocumentSimilarityComparison.AzureHelper
             return resumeResult;
         }
 
-        static async Task<Job_Description_Model> InsertJobDescriptionDetails(Job_Description_Model job_Description_Model)
+        private static async Task<Job_Description_Model> InsertJobDescriptionDetails(Job_Description_Model job_Description_Model)
         {
             var options = new DbContextOptionsBuilder<DocumentDbContext>()
-                .UseSqlServer("Server=10.3.117.39\\SQLSERVER;Database=Innovators;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True;")
+                .UseSqlServer(connectionString)
                 .Options;
 
             using var context = new DocumentDbContext(options);
@@ -194,7 +194,7 @@ namespace DocumentSimilarityComparison.AzureHelper
         public static async Task<Requestor_Model> InsertRequestorDetails(Requestor_Model requestor_Model)
         {
             var options = new DbContextOptionsBuilder<DocumentDbContext>()
-                .UseSqlServer("Server=10.3.117.39\\SQLSERVER;Database=Innovators;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True;")
+                .UseSqlServer(connectionString)
                 .Options;
 
             using var context = new DocumentDbContext(options);
@@ -202,6 +202,7 @@ namespace DocumentSimilarityComparison.AzureHelper
             var resumeResult = await docSimilarity.CreateResumeAsync(requestor_Model);
             return resumeResult;
         }
+
 
         #region using Azure open AI to get the text from pdf
 
