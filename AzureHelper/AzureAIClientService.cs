@@ -22,7 +22,8 @@ namespace DocumentSimilarityComparison.AzureHelper
 {
     public static class AzureAIClientService
     {
-        private static readonly string connectionString = "Server=tcp:innovatorssqlserver.database.windows.net;Initial Catalog=Innovators;Persist Security Info=False;User ID=AdminInnovators;Password=Admin123;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+        private static readonly string connectionString = "Server=tcp:innovatorssqlserver.database.windows.net;Initial Catalog=Innovators;Persist Security Info=False;User ID=AdminInnovators;Password=Admin123;Encrypt=Strict;TrustServerCertificate=False;Connection Timeout=30;";
+
         private static readonly string azureEndpoint = "https://innovatorsopenairesource.openai.azure.com/";
         private static readonly string azureAPIKey = "81TfYFL0O1bkvbNzvWaoqrq63dJUDYS0OS3O9RUiOl08FUkE1g2TJQQJ99BFACYeBjFXJ3w3AAABACOGCq2N";
         private static readonly string azureLanguageAPIPath = "/language/:analyze-text?api-version=2023-04-01";
