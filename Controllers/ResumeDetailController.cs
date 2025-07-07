@@ -1,4 +1,5 @@
 ﻿using DocumentSimilarityComparison;
+using DocumentSimilarityComparison.AgentHelper;
 using DocumentSimilarityComparison.Models;
 using DocumentSimilarityComparison.Utility;
 using Microsoft.AspNetCore.Mvc;
@@ -31,6 +32,15 @@ public class ResumeDetailController : ControllerBase
     {
         var requestor = await _context.Requestors.FindAsync(id);
         return requestor == null ? NotFound() : Ok(requestor);
+    }
+
+    [HttpPost]
+
+    public async Task<string> SendEmail(string applicantName, string jobtitle, string requestorMailId)
+    {
+        string communicationSent = await CommunicationAgent.SendEmailWithRank(applicantName, jobtitle, requestorMailId);
+
+        return communicationSent;
     }
 
     //[HttpPost]

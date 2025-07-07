@@ -57,5 +57,35 @@ namespace DocumentSimilarityComparison.AgentHelper
                 return "Communication Failed";
             }
         }
+        public static async Task<string> SendEmailWithRank(string applicantName, string jobtitle, string requestorMailId)
+        {
+            try
+            {
+                string fromEmail = "yugashini1905@gmail.com";
+                string fromEmailPassword = "ztvh ixgs guyf iauo";
+                MailMessage mailMessage = new MailMessage();
+                mailMessage.From = new MailAddress(fromEmail);
+                mailMessage.To.Add(requestorMailId);
+                mailMessage.Subject = string.Format("Invitation for Interview at Hexaware");
+                mailMessage.Body = string.Format("Hi {0},\n\n", applicantName);
+                mailMessage.Body += string.Format("Thankyou again for applying to the role {0} at Hexaware\n", jobtitle);
+                mailMessage.Body += string.Format("Interview details will be shared shortly.\n\n");
+                mailMessage.Body += "Regards,\n";
+                mailMessage.Body += "Yugashini.";
+                SmtpClient smtpClient = new SmtpClient("smtp.gmail.com", 587);
+                smtpClient.Credentials = new NetworkCredential(fromEmail, fromEmailPassword);
+                smtpClient.EnableSsl = true;
+                smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
+                smtpClient.UseDefaultCredentials = false;  
+                smtpClient.Send(mailMessage);
+
+                return "Communication Sent";
+
+            }
+            catch (Exception ex)
+            {
+                return "Communication Failed";
+            }
+        }
     }
 }
