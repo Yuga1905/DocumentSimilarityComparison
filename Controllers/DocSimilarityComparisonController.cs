@@ -102,7 +102,9 @@ namespace DocumentSimilarityComparison.Controllers
             Job_Description_Model job_Description_Model = new Job_Description_Model();
             (string resultJobDescriptionText, job_Description_Model) =
                 await AzureHelper.AzureAIClientService.GetJobDescription(jobDescriptionPath, job_Description_Model);
-            await _hubContext.Clients.All.SendAsync("JobDescriptionUploaded");
+            compareAllResumes.JdID = job_Description_Model.JdId;
+            compareAllResumes.JobTitle = job_Description_Model.JdTitle;
+           await _hubContext.Clients.All.SendAsync("JobDescriptionUploaded");
             foreach (string pdfPath in pdfFiles)
             {
                 ResumeDTO resumeDTO = new ResumeDTO
@@ -118,9 +120,9 @@ namespace DocumentSimilarityComparison.Controllers
             
             #endregion
 
-            JobDescriptionDTO matchedResumes = await ComparisonAgent.MatchResumesWithJobDescription(jobDescriptionPath, resumesFolderPath);
+            //JobDescriptionDTO matchedResumes = await ComparisonAgent.MatchResumesWithJobDescription(jobDescriptionPath, resumesFolderPath);
 
-            JobDescriptionDTO rankedResumes = await RankingAgent.RankResumesWithScore(matchedResumes);
+            JobDescriptionDTO rankedResumes = await RankingAgent.RankResumesWithScore(compareAllResumes);
 
             string communicationSent = await CommunicationAgent.SendEmailWithRank(rankedResumes, RequestorEmailId);
 
@@ -134,11 +136,11 @@ namespace DocumentSimilarityComparison.Controllers
 
             };
 
-            if (matchedResumes.JdID > 0)
+            if (compareAllResumes.JdID > 0)
 
             {
 
-                requestor_Model.JdId = matchedResumes.JdID;
+                requestor_Model.JdId = compareAllResumes.JdID;
 
                 await AzureAIClientService.InsertRequestorDetails(requestor_Model);
 
@@ -156,7 +158,7 @@ namespace DocumentSimilarityComparison.Controllers
             return Ok(new
             {
                 message = "Upload and processing completed successfully",
-                jdId = matchedResumes.JdID,
+                jdId = compareAllResumes.JdID,
                 status = requestor_Model.CommunicationStatus
             });
 

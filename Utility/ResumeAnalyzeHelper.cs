@@ -13,6 +13,7 @@ namespace DocumentSimilarityComparison.Utility
             resume_Details.JdId = job_Description_Model.JdId;
             resume_Details.Experience = resumedto.Experience;
             resume_Details.Score = Math.Round((decimal)(resumedto.ProfileScore * 100), 2);
+            resume_Details.UserCommunicationStatus = string.Empty;
         }
     }
 }
