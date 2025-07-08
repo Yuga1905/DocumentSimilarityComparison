@@ -36,11 +36,19 @@ public class ResumeDetailController : ControllerBase
 
     [HttpPost]
 
-    public async Task<string> SendEmail(string applicantName, int id, string requestorMailId)
+    public async Task<string> SendEmail(int id)
     {
         var jdID = await _context.ResumeDetails
                     .Where(u => u.Id == id)
                     .Select(u => u.JdId)
+                    .FirstOrDefaultAsync();
+        string applicantName = await _context.ResumeDetails
+                    .Where(u => u.Id == id)
+                    .Select(u => u.Name)
+                    .FirstOrDefaultAsync();
+        string requestorMailId = await _context.ResumeDetails
+                    .Where(u => u.Id == id)
+                    .Select(u => u.Email)
                     .FirstOrDefaultAsync();
         string jobtitle = await _context.JobDescriptions
                             .Where(u => u.JdId == jdID)

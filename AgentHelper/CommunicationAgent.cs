@@ -68,7 +68,7 @@ namespace DocumentSimilarityComparison.AgentHelper
                 mailMessage.To.Add(requestorMailId);
                 mailMessage.Subject = string.Format("Invitation for Interview at Hexaware");
                 mailMessage.Body = string.Format("Hi {0},\n\n", applicantName);
-                mailMessage.Body += string.Format("Thankyou again for applying to the role {0} at Hexaware\n", jobtitle);
+                mailMessage.Body += string.Format("Thankyou again for applying to the role {0} at Hexaware\n\n", jobtitle);
                 mailMessage.Body += string.Format("Interview details will be shared shortly.\n\n");
                 mailMessage.Body += "Regards,\n";
                 mailMessage.Body += "Yugashini.";
