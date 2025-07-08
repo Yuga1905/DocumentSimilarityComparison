@@ -36,8 +36,16 @@ public class ResumeDetailController : ControllerBase
 
     [HttpPost]
 
-    public async Task<string> SendEmail(string applicantName, string jobtitle, string requestorMailId)
+    public async Task<string> SendEmail(string applicantName, int id, string requestorMailId)
     {
+        var jdID = await _context.ResumeDetails
+                    .Where(u => u.Id == id)
+                    .Select(u => u.JdId)
+                    .FirstOrDefaultAsync();
+        string jobtitle = await _context.JobDescriptions
+                            .Where(u => u.JdId == jdID)
+                            .Select(u => u.JdTitle)
+                            .FirstOrDefaultAsync();
         string communicationSent = await CommunicationAgent.SendEmailWithRank(applicantName, jobtitle, requestorMailId);
 
         return communicationSent;

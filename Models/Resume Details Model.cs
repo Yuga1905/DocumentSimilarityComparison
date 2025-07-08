@@ -11,6 +11,8 @@
         public decimal Score { get; set; }        // or double
         public string Skills { get; set; }        // Comma-separated or move to another table for normalization
 
+        public string UserCommunicationStatus { get; set; }
+
         // Navigation Property
         public Job_Description_Model JobDescription { get; set; }
     }
