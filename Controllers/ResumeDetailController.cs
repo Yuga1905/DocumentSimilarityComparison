@@ -47,7 +47,12 @@ public class ResumeDetailController : ControllerBase
                             .Select(u => u.JdTitle)
                             .FirstOrDefaultAsync();
         string communicationSent = await CommunicationAgent.SendEmailWithRank(applicantName, jobtitle, requestorMailId);
+        var log = await _context.ResumeDetails.FindAsync(id);      
 
+        log.UserCommunicationStatus = communicationSent;
+
+        _context.ResumeDetails.Update(log);
+        await _context.SaveChangesAsync();
         return communicationSent;
     }
 

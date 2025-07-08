@@ -79,12 +79,12 @@ namespace DocumentSimilarityComparison.AgentHelper
                 smtpClient.UseDefaultCredentials = false;  
                 smtpClient.Send(mailMessage);
 
-                return "Communication Sent";
+                return "Sent";
 
             }
             catch (Exception ex)
             {
-                return "Communication Failed";
+                return "Failed";
             }
         }
     }
